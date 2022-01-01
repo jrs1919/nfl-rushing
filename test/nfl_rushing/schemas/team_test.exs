@@ -41,9 +41,12 @@ defmodule NFLRushing.Schemas.TeamTest do
 
       # Attempt to create a new team with the same abbreviation
       attrs = %{abbreviation: team.abbreviation, city: "Seattle", mascot: "Seahawks"}
-      changeset = Team.changeset(%Team{}, attrs)
 
-      assert {:error, changeset} = Repo.insert(changeset)
+      assert {:error, changeset} =
+               %Team{}
+               |> Team.changeset(attrs)
+               |> Repo.insert()
+
       assert %{abbreviation: ["has already been taken"]} = errors_on(changeset)
     end
   end

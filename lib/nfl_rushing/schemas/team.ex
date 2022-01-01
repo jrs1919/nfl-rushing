@@ -1,15 +1,20 @@
 defmodule NFLRushing.Schemas.Team do
   @moduledoc """
   This module defines an Ecto schema that represents an individual NFL team.
+
+  Teams are associated with a set of players.
   """
 
   use Ecto.Schema
   import Ecto.Changeset
+  alias NFLRushing.Schemas.Player
 
   schema "teams" do
     field :abbreviation, :string
     field :city, :string
     field :mascot, :string
+
+    has_many :players, Player
 
     timestamps()
   end
