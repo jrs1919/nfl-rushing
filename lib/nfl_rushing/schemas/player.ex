@@ -4,15 +4,17 @@ defmodule NFLRushing.Schemas.Player do
 
   Players are associated with a team and a set of rushing statistics.
   """
+
   use Ecto.Schema
   import Ecto.Changeset
-  alias NFLRushing.Schemas.Team
+  alias NFLRushing.Schemas.{RushingStats, Team}
 
   schema "players" do
     field :name, :string
     field :position, :string
 
     belongs_to :team, Team
+    has_one :rushing_stats, RushingStats
 
     timestamps()
   end
