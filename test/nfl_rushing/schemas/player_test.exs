@@ -3,11 +3,6 @@ defmodule NFLRushing.Schemas.PlayerTest do
   alias NFLRushing.Schemas.{Player, Team}
 
   describe "changeset/2" do
-    @valid_attrs %{
-      name: "Patrick Mahomes",
-      position: "QB"
-    }
-
     setup do
       team_attrs = %{
         abbreviation: "KC",
@@ -20,7 +15,13 @@ defmodule NFLRushing.Schemas.PlayerTest do
         |> Team.changeset(team_attrs)
         |> Repo.insert!()
 
-      {:ok, attrs: Map.put(@valid_attrs, :team_id, team.id)}
+      player_attrs = %{
+        name: "Patrick Mahomes",
+        position: "QB",
+        team_id: team.id
+      }
+
+      {:ok, attrs: player_attrs}
     end
 
     test "with valid attributes", %{attrs: attrs} do

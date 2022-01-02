@@ -4,19 +4,39 @@ defmodule NFLRushing.Stats do
   players and teams.
   """
 
+  import Ecto.Query
   alias NFLRushing.Repo
-  alias NFLRushing.Schemas.Team
+  alias NFLRushing.Schemas.{Player, Team}
 
   @doc """
-  Creates or updates a team using the given `attrs` data.
-
-  If a team already exists with the abbreviation in `attrs`, the existing team
-  data is updated in the database with the data in `attrs`.
+  Creates a player using the given `attrs` data.
   """
-  @spec create_or_update_team(map()) :: {:ok, Team.t()} | {:error, Ecto.Changeset.t()}
-  def create_or_update_team(attrs) do
+  @spec create_player(map()) :: {:ok, Player.t()} | {:error, Ecto.Changeset.t()}
+  def create_player(attrs) do
+    %Player{}
+    |> Player.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Creates a team using the given `attrs` data.
+  """
+  @spec create_team(map()) :: {:ok, Team.t()} | {:error, Ecto.Changeset.t()}
+  def create_team(attrs) do
     %Team{}
     |> Team.changeset(attrs)
-    |> Repo.insert(on_conflict: {:replace_all_except, [:id]}, conflict_target: :abbreviation)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Fetches a team with the given `abbreviation`.  
+
+  `nil` is returned if the team with `abbreviation` does not exist.
+  """
+  @spec get_team_by_abbreviation!(String.t()) :: Team.t() | nil
+  def get_team_by_abbreviation!(abbreviation) do
+    Team
+    |> where([t], t.abbreviation == ^abbreviation)
+    |> Repo.one()
   end
 end

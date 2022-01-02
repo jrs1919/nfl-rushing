@@ -47,6 +47,24 @@ teams = [
   %{abbreviation: "WAS", city: "Washington", mascot: "Football Team"}
 ]
 
-Enum.each(teams, fn team ->
-  {:ok, _} = Stats.create_or_update_team(team)
+teams =
+  Enum.into(teams, %{}, fn team ->
+    {:ok, team} = Stats.create_team(team)
+    {team.abbreviation, team}
+  end)
+
+rushing_data =
+  Path.join(__DIR__, "rushing.json")
+  |> File.read!()
+  |> Jason.decode!()
+
+Enum.each(rushing_data, fn item ->
+  team = Map.fetch!(teams, item["Team"])
+
+  {:ok, _player} =
+    Stats.create_player(%{
+      name: item["Player"],
+      position: item["Pos"],
+      team_id: team.id
+    })
 end)
