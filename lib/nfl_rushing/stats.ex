@@ -6,7 +6,7 @@ defmodule NFLRushing.Stats do
 
   import Ecto.Query
   alias NFLRushing.Repo
-  alias NFLRushing.Schemas.{Player, Team}
+  alias NFLRushing.Schemas.{Player, RushingStats, Team}
 
   @doc """
   Creates a player using the given `attrs` data.
@@ -15,6 +15,16 @@ defmodule NFLRushing.Stats do
   def create_player(attrs) do
     %Player{}
     |> Player.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Creates a set of rushing stats using the given `attrs` data.
+  """
+  @spec create_rushing_stats(map()) :: {:ok, RushingStats.t()} | {:error, Ecto.Changeset.t()}
+  def create_rushing_stats(attrs) do
+    %RushingStats{}
+    |> RushingStats.changeset(attrs)
     |> Repo.insert()
   end
 

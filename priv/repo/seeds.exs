@@ -10,6 +10,7 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
+import NFLRushing.NumberUtils
 alias NFLRushing.Stats
 
 teams = [
@@ -53,18 +54,36 @@ teams =
     {team.abbreviation, team}
   end)
 
-rushing_data =
-  Path.join(__DIR__, "rushing.json")
-  |> File.read!()
-  |> Jason.decode!()
-
-Enum.each(rushing_data, fn item ->
+Path.join(__DIR__, "rushing.json")
+|> File.read!()
+|> Jason.decode!()
+|> Enum.each(fn item ->
   team = Map.fetch!(teams, item["Team"])
 
-  {:ok, _player} =
+  {:ok, player} =
     Stats.create_player(%{
-      name: item["Player"],
-      position: item["Pos"],
+      name: Map.fetch!(item, "Player"),
+      position: Map.fetch!(item, "Pos"),
       team_id: team.id
+    })
+
+  {longest_rush, is_longest_rush_touchdown} = item |> Map.fetch!("Lng") |> parse_compound_stat()
+
+  {:ok, _} =
+    Stats.create_rushing_stats(%{
+      attempts: item |> Map.fetch!("Att") |> parse_integer(),
+      attempts_per_game_average: item |> Map.fetch!("Att/G") |> parse_float(),
+      average_yards_per_attempt: item |> Map.fetch!("Avg") |> parse_float(),
+      first_downs: item |> Map.fetch!("1st") |> parse_integer(),
+      first_down_percentage: item |> Map.fetch!("1st%") |> parse_float(),
+      forty_plus_yard_rushes: item |> Map.fetch!("40+") |> parse_integer(),
+      fumbles: item |> Map.fetch!("FUM") |> parse_integer(),
+      is_longest_rush_touchdown: is_longest_rush_touchdown,
+      longest_rush: longest_rush,
+      player_id: player.id,
+      total_yards: item |> Map.fetch!("Yds") |> parse_integer(),
+      touchdowns: item |> Map.fetch!("TD") |> parse_integer(),
+      twenty_plus_yard_rushes: item |> Map.fetch!("20+") |> parse_integer(),
+      yards_per_game: item |> Map.fetch!("Yds/G") |> parse_float()
     })
 end)
