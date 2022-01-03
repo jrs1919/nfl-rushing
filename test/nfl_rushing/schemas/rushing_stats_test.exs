@@ -1,40 +1,10 @@
 defmodule NFLRushing.Schemas.RushingStatsTest do
   use NFLRushing.DataCase, async: true
-  alias NFLRushing.Schemas.{Player, RushingStats}
+  alias NFLRushing.Schemas.RushingStats
 
   describe "changeset/2" do
-    setup do
-      player_attrs = %{
-        name: "Patrick Mahomes",
-        position: "QB"
-      }
-
-      player =
-        %Player{}
-        |> Player.changeset(player_attrs)
-        |> Repo.insert!()
-
-      rushing_stats_attrs = %{
-        attempts: 10,
-        attempts_per_game_average: 2.1,
-        average_yards_per_attempt: 8.3,
-        first_downs: 3,
-        first_down_percentage: 23.1,
-        forty_plus_yard_rushes: 1,
-        fumbles: 1,
-        is_longest_rush_touchdown: false,
-        longest_rush: 21,
-        player_id: player.id,
-        total_yards: 80,
-        touchdowns: 1,
-        twenty_plus_yard_rushes: 2,
-        yards_per_game: 12.3
-      }
-
-      {:ok, attrs: rushing_stats_attrs}
-    end
-
-    test "with valid attributes", %{attrs: attrs} do
+    test "with valid attributes" do
+      attrs = params_with_assocs(:rushing_stats)
       changeset = RushingStats.changeset(%RushingStats{}, attrs)
 
       assert changeset.valid?
@@ -60,8 +30,8 @@ defmodule NFLRushing.Schemas.RushingStatsTest do
       assert %{yards_per_game: ["can't be blank"]} = errors_on(changeset)
     end
 
-    test "with an invalid player", %{attrs: attrs} do
-      attrs = %{attrs | player_id: 0}
+    test "with an invalid player" do
+      attrs = params_for(:rushing_stats, player_id: -1)
 
       assert {:error, changeset} =
                %RushingStats{}
@@ -71,7 +41,9 @@ defmodule NFLRushing.Schemas.RushingStatsTest do
       assert %{player_id: ["does not exist"]} = errors_on(changeset)
     end
 
-    test "creating duplicate stats for a player", %{attrs: attrs} do
+    test "creating duplicate stats for a player" do
+      attrs = params_with_assocs(:rushing_stats)
+
       assert {:ok, _} =
                %RushingStats{}
                |> RushingStats.changeset(attrs)

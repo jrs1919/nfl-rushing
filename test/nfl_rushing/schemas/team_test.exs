@@ -3,14 +3,9 @@ defmodule NFLRushing.Schemas.TeamTest do
   alias NFLRushing.Schemas.Team
 
   describe "changeset/2" do
-    @valid_attrs %{
-      abbreviation: "KC",
-      city: "Kansas City",
-      mascot: "Chiefs"
-    }
-
     test "with valid attributes" do
-      changeset = Team.changeset(%Team{}, @valid_attrs)
+      attrs = params_for(:team)
+      changeset = Team.changeset(%Team{}, attrs)
 
       assert changeset.valid?
     end
@@ -25,7 +20,7 @@ defmodule NFLRushing.Schemas.TeamTest do
     end
 
     test "with an invalid abbreviation" do
-      attrs = %{@valid_attrs | abbreviation: "NYSC"}
+      attrs = params_for(:team, abbreviation: "NYSC")
       changeset = Team.changeset(%Team{}, attrs)
 
       refute changeset.valid?
@@ -33,20 +28,10 @@ defmodule NFLRushing.Schemas.TeamTest do
     end
 
     test "with a duplicate abbreviation" do
-      # Create a new team in the database
-      {:ok, team} =
-        %Team{}
-        |> Team.changeset(@valid_attrs)
-        |> Repo.insert()
-
-      # Attempt to create a new team with the same abbreviation
+      team = insert(:team)
       attrs = %{abbreviation: team.abbreviation, city: "Seattle", mascot: "Seahawks"}
 
-      assert {:error, changeset} =
-               %Team{}
-               |> Team.changeset(attrs)
-               |> Repo.insert()
-
+      assert {:error, changeset} = %Team{} |> Team.changeset(attrs) |> Repo.insert()
       assert %{abbreviation: ["has already been taken"]} = errors_on(changeset)
     end
   end

@@ -24,6 +24,7 @@ defmodule NFLRushing.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import NFLRushing.DataCase
+      import NFLRushing.Factory
     end
   end
 
