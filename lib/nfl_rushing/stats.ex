@@ -8,6 +8,11 @@ defmodule NFLRushing.Stats do
   alias NFLRushing.Repo
   alias NFLRushing.Schemas.{Player, RushingStats, Team}
 
+  @type lpws_query_params_t :: %{
+          filter: [{atom(), integer() | String.t()}] | nil,
+          order: {atom(), atom()} | nil
+        }
+
   @doc """
   Creates a player using the given `attrs` data.
   """
@@ -49,4 +54,57 @@ defmodule NFLRushing.Stats do
     |> where([t], t.abbreviation == ^abbreviation)
     |> Repo.one()
   end
+
+  @doc """
+  Returns a set of players with their team and rushing stats data based on the
+  given query params.
+  """
+  @spec list_players_with_stats(lpws_query_params_t() | nil) :: [Player.t()]
+  def list_players_with_stats(params \\ nil) do
+    params
+    |> lpws_query()
+    |> join(:left, [p], t in assoc(p, :team), as: :team)
+    |> preload([p, rushing_stats: rs, team: t], rushing_stats: rs, team: t)
+    |> Repo.all()
+  end
+
+  @doc """
+  Returns the number of players with stats that exists based on the given query
+  params.
+  """
+  @spec number_of_players_with_stats(lpws_query_params_t() | nil) :: integer()
+  def number_of_players_with_stats(params \\ nil) do
+    params
+    |> lpws_query()
+    |> Repo.aggregate(:count)
+  end
+
+  defp lpws_query(params) do
+    Player
+    |> join(:inner, [p], rs in assoc(p, :rushing_stats), as: :rushing_stats)
+    |> lpws_filter_with(params)
+    |> lpws_order_with(params)
+  end
+
+  defp lpws_filter_with(query, %{filter: filters}) do
+    Enum.reduce(filters, query, fn
+      {:limit, limit}, query ->
+        limit(query, [p], ^limit)
+
+      {:offset, offset}, query ->
+        offset(query, [p], ^offset)
+
+      {:player_name, player_name}, query ->
+        where(query, [p], ilike(p.name, ^"#{player_name}%"))
+    end)
+  end
+
+  defp lpws_filter_with(query, _), do: query
+
+  defp lpws_order_with(query, %{order: {direction, field}})
+       when field in [:longest_rush, :total_yards, :touchdowns] do
+    order_by(query, [rushing_stats: rs], {^direction, field(rs, ^field)})
+  end
+
+  defp lpws_order_with(query, _), do: query
 end

@@ -24,8 +24,7 @@ defmodule NFLRushing.Factory do
   def player_factory do
     %Player{
       name: "Patrick Mahomes",
-      position: "QB",
-      team: build(:team)
+      position: "QB"
     }
   end
 
