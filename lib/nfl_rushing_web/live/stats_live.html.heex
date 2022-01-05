@@ -1,0 +1,66 @@
+<h1>NFL Rushing Stats</h1>
+
+<form id="search-form" phx-change="search">
+  <%= search_input :search, :query,
+        value: @search_query,
+        placeholder: "Search for Player",
+        tablindex: 1,
+        phx_debounce: 200 %>
+</form>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Team</th>
+      <th>Position</th>
+      <th>
+        Total Yds
+        <%= live_patch "▲", to: Routes.live_path(@socket, NFLRushingWeb.StatsLive, sort_by: :total_yards, direction: :asc) %>
+        <%= live_patch "▼", to: Routes.live_path(@socket, NFLRushingWeb.StatsLive, sort_by: :total_yards, direction: :desc) %>
+      </th>
+      <th>Attempts</th>
+      <th>Attempts/G</th>
+      <th>
+        TDs
+        <%= live_patch "▲", to: Routes.live_path(@socket, NFLRushingWeb.StatsLive, sort_by: :touchdowns, direction: :asc) %>
+        <%= live_patch "▼", to: Routes.live_path(@socket, NFLRushingWeb.StatsLive, sort_by: :touchdowns, direction: :desc) %>
+      </th>
+      <th>Yds/G</th>
+      <th>Avg Yds/Attempt</th>
+      <th>1st Downs</th>
+      <th>1st Down %</th>
+      <th>20+ Yd Rushes</th>
+      <th>40+ Yd Rushes</th>
+      <th>Fumbles</th>
+      <th>
+        Longest Rush
+        <%= live_patch "▲", to: Routes.live_path(@socket, NFLRushingWeb.StatsLive, sort_by: :longest_rush, direction: :asc) %>
+        <%= live_patch "▼", to: Routes.live_path(@socket, NFLRushingWeb.StatsLive, sort_by: :longest_rush, direction: :desc) %>
+      </th>
+      <th>Longest Rush TD</th>
+    </tr>
+  </thead>
+  <tbody id="players">
+    <%= for player <- @players do %>
+      <tr id={"player-#{player.id}"}>
+        <td><%= player.name %></td>
+        <td><%= player.team.city %> <%= player.team.mascot %></td>
+        <td><%= player.position %></td>
+        <td><%= player.rushing_stats.total_yards %></td>
+        <td><%= player.rushing_stats.attempts %></td>
+        <td><%= player.rushing_stats.attempts_per_game_average %></td>
+        <td><%= player.rushing_stats.touchdowns %></td>
+        <td><%= player.rushing_stats.yards_per_game %></td>
+        <td><%= player.rushing_stats.average_yards_per_attempt %></td>
+        <td><%= player.rushing_stats.first_downs %></td>
+        <td><%= player.rushing_stats.first_down_percentage %></td>
+        <td><%= player.rushing_stats.twenty_plus_yard_rushes %></td>
+        <td><%= player.rushing_stats.forty_plus_yard_rushes %></td>
+        <td><%= player.rushing_stats.fumbles %></td>
+        <td><%= player.rushing_stats.longest_rush %></td>
+        <td><%= if player.rushing_stats.is_longest_rush_touchdown, do: "Yes", else: "No" %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

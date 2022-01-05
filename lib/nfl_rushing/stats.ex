@@ -8,10 +8,12 @@ defmodule NFLRushing.Stats do
   alias NFLRushing.Repo
   alias NFLRushing.Schemas.{Player, RushingStats, Team}
 
-  @type lpws_query_params_t :: %{
-          filter: [{atom(), integer() | String.t()}] | nil,
-          order: {atom(), atom()} | nil
-        }
+  @type lpws_filter_t :: [{atom(), integer() | String.t()}] | nil
+  @type lpws_order_t :: {atom(), atom()} | nil
+  @type lpws_query_params_t ::
+          %{filter: lpws_filter_t(), order: lpws_order_t()}
+          | %{filter: lpws_filter_t()}
+          | %{order: lpws_order_t()}
 
   @doc """
   Creates a player using the given `attrs` data.
