@@ -24,13 +24,16 @@ defmodule NFLRushing.Factory do
   def player_factory do
     %Player{
       name: "Patrick Mahomes",
-      position: "QB"
+      position: "QB",
+      team: build(:team)
     }
   end
 
   def team_factory do
+    abbreviation = for _ <- 1..3, into: "", do: <<Enum.random(?a..?z)>>
+
     %Team{
-      abbreviation: "KC",
+      abbreviation: abbreviation,
       city: "Kansas City",
       mascot: "Chiefs"
     }

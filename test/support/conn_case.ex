@@ -23,6 +23,7 @@ defmodule NFLRushingWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
       import NFLRushingWeb.ConnCase
+      import NFLRushing.Factory
 
       alias NFLRushingWeb.Router.Helpers, as: Routes
 

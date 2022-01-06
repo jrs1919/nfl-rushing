@@ -102,13 +102,13 @@ defmodule NFLRushing.StatsTest do
       insert(:rushing_stats, player: p2, longest_rush: 55)
       insert(:rushing_stats, player: p3, longest_rush: 31)
 
-      [result1, result2, result3] = Stats.list_players_with_stats(%{order: {:asc, :longest_rush}})
+      [result1, result2, result3] = Stats.list_players_with_stats(%{order: [asc: :longest_rush]})
+
       assert result1.id == p1.id
       assert result2.id == p3.id
       assert result3.id == p2.id
 
-      [result1, result2, result3] =
-        Stats.list_players_with_stats(%{order: {:desc, :longest_rush}})
+      [result1, result2, result3] = Stats.list_players_with_stats(%{order: [desc: :longest_rush]})
 
       assert result1.id == p2.id
       assert result2.id == p3.id
@@ -121,12 +121,14 @@ defmodule NFLRushing.StatsTest do
       insert(:rushing_stats, player: p2, total_yards: 542)
       insert(:rushing_stats, player: p3, total_yards: 331)
 
-      [result1, result2, result3] = Stats.list_players_with_stats(%{order: {:asc, :total_yards}})
+      [result1, result2, result3] = Stats.list_players_with_stats(%{order: [asc: :total_yards]})
+
       assert result1.id == p1.id
       assert result2.id == p3.id
       assert result3.id == p2.id
 
-      [result1, result2, result3] = Stats.list_players_with_stats(%{order: {:desc, :total_yards}})
+      [result1, result2, result3] = Stats.list_players_with_stats(%{order: [desc: :total_yards]})
+
       assert result1.id == p2.id
       assert result2.id == p3.id
       assert result3.id == p1.id
@@ -138,15 +140,32 @@ defmodule NFLRushing.StatsTest do
       insert(:rushing_stats, player: p2, touchdowns: 10)
       insert(:rushing_stats, player: p3, touchdowns: 7)
 
-      [result1, result2, result3] = Stats.list_players_with_stats(%{order: {:asc, :touchdowns}})
+      [result1, result2, result3] = Stats.list_players_with_stats(%{order: [asc: :touchdowns]})
       assert result1.id == p1.id
       assert result2.id == p3.id
       assert result3.id == p2.id
 
-      [result1, result2, result3] = Stats.list_players_with_stats(%{order: {:desc, :touchdowns}})
+      [result1, result2, result3] = Stats.list_players_with_stats(%{order: [desc: :touchdowns]})
+
       assert result1.id == p2.id
       assert result2.id == p3.id
       assert result3.id == p1.id
+    end
+
+    test "sorts the results by player id" do
+      player_ids = insert_list(3, :rushing_stats) |> Enum.map(& &1.player.id) |> Enum.sort()
+
+      result_ids =
+        Stats.list_players_with_stats(%{order: [asc: :player_id]})
+        |> Enum.map(& &1.id)
+
+      assert player_ids == result_ids
+
+      result_ids =
+        Stats.list_players_with_stats(%{order: [desc: :player_id]})
+        |> Enum.map(& &1.id)
+
+      assert Enum.reverse(player_ids) == result_ids
     end
   end
 

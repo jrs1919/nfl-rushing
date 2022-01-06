@@ -2,7 +2,7 @@
 
 <form id="search-form" phx-change="search">
   <%= search_input :search, :query,
-        value: @search_query,
+        value: player_name(@query),
         placeholder: "Search for Player",
         tablindex: 1,
         phx_debounce: 200 %>
@@ -16,15 +16,15 @@
       <th>Position</th>
       <th>
         Total Yds
-        <%= live_patch "▲", to: Routes.live_path(@socket, NFLRushingWeb.StatsLive, sort_by: :total_yards, direction: :asc) %>
-        <%= live_patch "▼", to: Routes.live_path(@socket, NFLRushingWeb.StatsLive, sort_by: :total_yards, direction: :desc) %>
+        <%= live_patch "▲", to: Routes.live_path(@socket, StatsLive, sort_by: :total_yards, direction: :asc) %>
+        <%= live_patch "▼", to: Routes.live_path(@socket, StatsLive, sort_by: :total_yards, direction: :desc) %>
       </th>
       <th>Attempts</th>
       <th>Attempts/G</th>
       <th>
         TDs
-        <%= live_patch "▲", to: Routes.live_path(@socket, NFLRushingWeb.StatsLive, sort_by: :touchdowns, direction: :asc) %>
-        <%= live_patch "▼", to: Routes.live_path(@socket, NFLRushingWeb.StatsLive, sort_by: :touchdowns, direction: :desc) %>
+        <%= live_patch "▲", to: Routes.live_path(@socket, StatsLive, sort_by: :touchdowns, direction: :asc) %>
+        <%= live_patch "▼", to: Routes.live_path(@socket, StatsLive, sort_by: :touchdowns, direction: :desc) %>
       </th>
       <th>Yds/G</th>
       <th>Avg Yds/Attempt</th>
@@ -35,8 +35,8 @@
       <th>Fumbles</th>
       <th>
         Longest Rush
-        <%= live_patch "▲", to: Routes.live_path(@socket, NFLRushingWeb.StatsLive, sort_by: :longest_rush, direction: :asc) %>
-        <%= live_patch "▼", to: Routes.live_path(@socket, NFLRushingWeb.StatsLive, sort_by: :longest_rush, direction: :desc) %>
+        <%= live_patch "▲", to: Routes.live_path(@socket, StatsLive, sort_by: :longest_rush, direction: :asc) %>
+        <%= live_patch "▼", to: Routes.live_path(@socket, StatsLive, sort_by: :longest_rush, direction: :desc) %>
       </th>
       <th>Longest Rush TD</th>
     </tr>
@@ -64,3 +64,9 @@
     <% end %>
   </tbody>
 </table>
+
+<%= if show_load_more?(@players, @total_players) do %>
+  <form id="load-more-form" phx-submit="load_more">
+    <%= submit "Load more" %>
+  </form>
+<% end %>
