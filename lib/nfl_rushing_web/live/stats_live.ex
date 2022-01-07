@@ -5,13 +5,14 @@ defmodule NFLRushingWeb.StatsLive do
 
   use NFLRushingWeb, :live_view
   alias __MODULE__
+  alias NFLRushing.Schemas.Team
   alias NFLRushing.Stats
 
   @page_size 10
   @default_stats_query %{
     order: [
-      desc: :touchdowns,
-      asc: :player_id
+      touchdowns: :desc,
+      player_id: :asc
     ],
     filter: %{
       limit: @page_size,
@@ -81,7 +82,7 @@ defmodule NFLRushingWeb.StatsLive do
 
     order =
       if sort_by && direction do
-        [{direction, sort_by}, asc: :player_id]
+        [{sort_by, direction}, {:player_id, :asc}]
       else
         query.order
       end
@@ -114,4 +115,13 @@ defmodule NFLRushingWeb.StatsLive do
   defp player_name(query), do: get_in(query, [:filter, :player_name])
 
   defp show_load_more?(players, total_players), do: length(players) + @page_size < total_players
+
+  defp query_to_json(query) do
+    # Convert order to a list of maps in order to preserve the ordering of the
+    # sort options.
+    order = Enum.map(query.order, fn {key, value} -> %{key => value} end)
+    query = %{query | order: order}
+
+    Jason.encode!(query)
+  end
 end

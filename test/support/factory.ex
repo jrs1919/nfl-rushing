@@ -4,27 +4,31 @@ defmodule NFLRushing.Factory do
 
   def rushing_stats_factory do
     %RushingStats{
-      attempts: 10,
-      attempts_per_game_average: 2.1,
-      average_yards_per_attempt: 8.3,
-      first_downs: 3,
-      first_down_percentage: 23.1,
-      forty_plus_yard_rushes: 1,
-      fumbles: 1,
-      is_longest_rush_touchdown: false,
-      longest_rush: 21,
+      attempts: random_integer(),
+      attempts_per_game_average: random_float(),
+      average_yards_per_attempt: random_float(),
+      first_downs: random_integer(),
+      first_down_percentage: random_float(),
+      forty_plus_yard_rushes: random_integer(),
+      fumbles: random_integer(),
+      is_longest_rush_touchdown: Enum.random([true, false]),
+      longest_rush: random_integer(),
       player: build(:player),
-      total_yards: 80,
-      touchdowns: 1,
-      twenty_plus_yard_rushes: 2,
-      yards_per_game: 12.3
+      total_yards: random_integer(),
+      touchdowns: random_integer(),
+      twenty_plus_yard_rushes: random_integer(),
+      yards_per_game: random_float()
     }
   end
 
+  defp random_integer, do: :rand.uniform(256)
+
+  defp random_float, do: :rand.uniform() * 10 |> Float.round(2)
+
   def player_factory do
     %Player{
-      name: "Patrick Mahomes",
-      position: "QB",
+      name: "John Doe",
+      position: Enum.random(~w(QB RB WR TE)),
       team: build(:team)
     }
   end

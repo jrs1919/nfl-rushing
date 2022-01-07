@@ -18,5 +18,7 @@ defmodule NFLRushingWeb.Router do
     pipe_through :browser
 
     live "/", StatsLive
+
+    post "/export", CSVExportController, :new
   end
 end

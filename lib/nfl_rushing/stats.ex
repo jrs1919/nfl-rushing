@@ -9,7 +9,7 @@ defmodule NFLRushing.Stats do
   alias NFLRushing.Schemas.{Player, RushingStats, Team}
 
   @type lpws_filter_t :: %{atom() => integer() | String.t()} | nil
-  @type lpws_order_t :: [{atom(), atom()}] | nil
+  @type lpws_order_t :: [%{atom() => atom()}] | nil
   @type lpws_query_params_t ::
           %{filter: lpws_filter_t(), order: lpws_order_t()}
           | %{filter: lpws_filter_t()}
@@ -105,16 +105,16 @@ defmodule NFLRushing.Stats do
 
   defp lpws_order_with(query, %{order: orders}) do
     Enum.reduce(orders, query, fn
-      {direction, :longest_rush}, query ->
+      {:longest_rush, direction}, query ->
         order_by(query, [rushing_stats: rs], {^direction, rs.longest_rush})
 
-      {direction, :total_yards}, query ->
+      {:total_yards, direction}, query ->
         order_by(query, [rushing_stats: rs], {^direction, rs.total_yards})
 
-      {direction, :touchdowns}, query ->
+      {:touchdowns, direction}, query ->
         order_by(query, [rushing_stats: rs], {^direction, rs.touchdowns})
 
-      {direction, :player_id}, query ->
+      {:player_id, direction}, query ->
         order_by(query, [p], {^direction, p.id})
     end)
   end

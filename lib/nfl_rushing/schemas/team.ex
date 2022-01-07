@@ -36,4 +36,10 @@ defmodule NFLRushing.Schemas.Team do
     |> validate_length(:abbreviation, max: 3)
     |> unique_constraint(:abbreviation)
   end
+
+  @doc """
+  Combines the city and mascot names of `team` into a single string.
+  """
+  @spec name(t()) :: String.t()
+  def name(team), do: "#{team.city} #{team.mascot}"
 end

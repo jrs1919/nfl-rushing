@@ -8,6 +8,8 @@
         phx_debounce: 200 %>
 </form>
 
+<%= button "Export as CSV", to: Routes.csv_export_path(@socket, :new, query: query_to_json(@query)) %>
+
 <table>
   <thead>
     <tr>
@@ -45,7 +47,7 @@
     <%= for player <- @players do %>
       <tr id={"player-#{player.id}"}>
         <td><%= player.name %></td>
-        <td><%= player.team.city %> <%= player.team.mascot %></td>
+        <td><%= Team.name(player.team) %></td>
         <td><%= player.position %></td>
         <td><%= player.rushing_stats.total_yards %></td>
         <td><%= player.rushing_stats.attempts %></td>
