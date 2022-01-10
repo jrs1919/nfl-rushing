@@ -1,0 +1,7 @@
+.dockerignore
+.git
+_build
+deps
+releases
+erl_crash.dump
+Dockerfile
