@@ -1,74 +1,163 @@
-<h1>NFL Rushing Stats</h1>
+<h1 class="text-xl font-semibold mb-4">NFL Rushing Stats</h1>
 
-<form id="search-form" phx-change="search">
+<form id="search-form" class="mb-4" phx-change="search">
   <%= search_input :search, :query,
         value: player_name(@query),
         placeholder: "Search for Player",
         tablindex: 1,
-        phx_debounce: 200 %>
+        phx_debounce: 200,
+        class: "rounded w-2/4 text-sm" %>
 </form>
 
-<%= button "Export as CSV", to: Routes.csv_export_path(@socket, :new, query: query_to_json(@query)) %>
+<%= button "Export as CSV",
+      to: Routes.csv_export_path(@socket, :new, query: query_to_json(@query)),
+      class: "btn mb-4" %>
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Team</th>
-      <th>Position</th>
-      <th>
-        Total Yds
-        <%= live_patch "▲", to: Routes.live_path(@socket, StatsLive, sort_by: :total_yards, direction: :asc) %>
-        <%= live_patch "▼", to: Routes.live_path(@socket, StatsLive, sort_by: :total_yards, direction: :desc) %>
-      </th>
-      <th>Attempts</th>
-      <th>Attempts/G</th>
-      <th>
-        TDs
-        <%= live_patch "▲", to: Routes.live_path(@socket, StatsLive, sort_by: :touchdowns, direction: :asc) %>
-        <%= live_patch "▼", to: Routes.live_path(@socket, StatsLive, sort_by: :touchdowns, direction: :desc) %>
-      </th>
-      <th>Yds/G</th>
-      <th>Avg Yds/Attempt</th>
-      <th>1st Downs</th>
-      <th>1st Down %</th>
-      <th>20+ Yd Rushes</th>
-      <th>40+ Yd Rushes</th>
-      <th>Fumbles</th>
-      <th>
-        Longest Rush
-        <%= live_patch "▲", to: Routes.live_path(@socket, StatsLive, sort_by: :longest_rush, direction: :asc) %>
-        <%= live_patch "▼", to: Routes.live_path(@socket, StatsLive, sort_by: :longest_rush, direction: :desc) %>
-      </th>
-      <th>Longest Rush TD</th>
-    </tr>
-  </thead>
-  <tbody id="players">
-    <%= for player <- @players do %>
-      <tr id={"player-#{player.id}"}>
-        <td><%= player.name %></td>
-        <td><%= Team.name(player.team) %></td>
-        <td><%= player.position %></td>
-        <td><%= player.rushing_stats.total_yards %></td>
-        <td><%= player.rushing_stats.attempts %></td>
-        <td><%= player.rushing_stats.attempts_per_game_average %></td>
-        <td><%= player.rushing_stats.touchdowns %></td>
-        <td><%= player.rushing_stats.yards_per_game %></td>
-        <td><%= player.rushing_stats.average_yards_per_attempt %></td>
-        <td><%= player.rushing_stats.first_downs %></td>
-        <td><%= player.rushing_stats.first_down_percentage %></td>
-        <td><%= player.rushing_stats.twenty_plus_yard_rushes %></td>
-        <td><%= player.rushing_stats.forty_plus_yard_rushes %></td>
-        <td><%= player.rushing_stats.fumbles %></td>
-        <td><%= player.rushing_stats.longest_rush %></td>
-        <td><%= if player.rushing_stats.is_longest_rush_touchdown, do: "Yes", else: "No" %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<div class="flex flex-col mb-4">
+  <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+    <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+      <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="table-header">
+                Name
+              </th>
+              <th scope="col" class="table-header">
+                Team
+              </th>
+              <th scope="col" class="table-header text-center">
+                Position
+              </th>
+              <th scope="col" class="table-header text-center">
+                Total Yds
+                <%= live_patch "▲",
+                      to: Routes.live_path(@socket, StatsLive, sort_by: :total_yards, direction: :asc),
+                      class: sort_link_class(@query, :total_yards, :asc) %>
+                <%= live_patch "▼",
+                      to: Routes.live_path(@socket, StatsLive, sort_by: :total_yards, direction: :desc),
+                      class: sort_link_class(@query, :total_yards, :desc) %>
+              </th>
+              <th scope="col" class="table-header text-center">
+                Attempts
+              </th>
+              <th scope="col" class="table-header text-center">
+                Attempts/G
+              </th>
+              <th scope="col" class="table-header text-center">
+                TDs
+                <%= live_patch "▲",
+                      to: Routes.live_path(@socket, StatsLive, sort_by: :touchdowns, direction: :asc),
+                      class: sort_link_class(@query, :touchdowns, :asc) %>
+                <%= live_patch "▼",
+                      to: Routes.live_path(@socket, StatsLive, sort_by: :touchdowns, direction: :desc),
+                      class: sort_link_class(@query, :touchdowns, :desc) %>
+              </th>
+              <th scope="col" class="table-header text-center">
+                Yds/G
+              </th>
+              <th scope="col" class="table-header text-center">
+                Avg Yds/Attempt
+              </th>
+              <th scope="col" class="table-header text-center">
+                1st Downs
+              </th>
+              <th scope="col" class="table-header text-center">
+                1st Down %
+              </th>
+              <th scope="col" class="table-header text-center">
+                20+ Yd Rushes
+              </th>
+              <th scope="col" class="table-header text-center">
+                40+ Yd Rushes
+              </th>
+              <th scope="col" class="table-header text-center">
+                Fumbles
+              </th>
+              <th scope="col" class="table-header text-center">
+                Longest Rush
+                <%= live_patch "▲",
+                      to: Routes.live_path(@socket, StatsLive, sort_by: :longest_rush, direction: :asc),
+                      class: sort_link_class(@query, :longest_rush, :asc) %>
+                <%= live_patch "▼",
+                      to: Routes.live_path(@socket, StatsLive, sort_by: :longest_rush, direction: :desc),
+                      class: sort_link_class(@query, :longest_rush, :desc) %>
+              </th>
+              <th scope="col" class="table-header text-center">
+                Longest Rush TD
+              </th>
+            </tr>
+          </thead>
+          <tbody id="players" class="bg-white divide-y divide-gray-200">
+            <%= for player <- @players do %>
+              <tr id={"player-#{player.id}"}>
+                <td class="table-data">
+                  <%= player.name %>
+                </td>
+                <td class="table-data">
+                  <%= Team.name(player.team) %>
+                </td>
+                <td class="table-data text-center">
+                  <%= player.position %>
+                </td>
+                <td class="table-data text-center">
+                  <%= player.rushing_stats.total_yards %>
+                </td>
+                <td class="table-data text-center">
+                  <%= player.rushing_stats.attempts %>
+                </td>
+                <td class="table-data text-center">
+                  <%= player.rushing_stats.attempts_per_game_average %>
+                </td>
+                <td class="table-data text-center">
+                  <%= player.rushing_stats.touchdowns %>
+                </td>
+                <td class="table-data text-center">
+                  <%= player.rushing_stats.yards_per_game %>
+                </td>
+                <td class="table-data text-center">
+                  <%= player.rushing_stats.average_yards_per_attempt %>
+                </td>
+                <td class="table-data text-center">
+                  <%= player.rushing_stats.first_downs %>
+                </td>
+                <td class="table-data text-center">
+                  <%= player.rushing_stats.first_down_percentage %>%
+                </td>
+                <td class="table-data text-center">
+                  <%= player.rushing_stats.twenty_plus_yard_rushes %>
+                </td>
+                <td class="table-data text-center">
+                  <%= player.rushing_stats.forty_plus_yard_rushes %>
+                </td>
+                <td class="table-data text-center">
+                  <%= player.rushing_stats.fumbles %>
+                </td>
+                <td class="table-data text-center">
+                  <%= player.rushing_stats.longest_rush %>
+                </td>
+                <td class="table-data text-center">
+                  <%= if player.rushing_stats.is_longest_rush_touchdown do %>
+                    <span class="bg-green-600 px-2 py-1 rounded-full text-white font-semibold uppercase">
+                      Yes
+                    </span>
+                  <% else %>
+                    <span class="bg-red-500 px-2 py-1 rounded-full text-white font-semibold uppercase">
+                      No
+                    </span>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 
 <%= if show_load_more?(@players, @total_players) do %>
   <form id="load-more-form" phx-submit="load_more">
-    <%= submit "Load more" %>
+    <%= submit "Load more", class: "btn" %>
   </form>
 <% end %>

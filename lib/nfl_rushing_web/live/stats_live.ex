@@ -124,4 +124,8 @@ defmodule NFLRushingWeb.StatsLive do
 
     Jason.encode!(query)
   end
+
+  defp sort_link_class(query, sort_by, order) do
+    if {sort_by, order} in query.order, do: "text-blue-500", else: ""
+  end
 end

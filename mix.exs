@@ -36,6 +36,7 @@ defmodule NFLRushing.MixProject do
       {:dialyzex, "~> 1.3.0", only: :dev},
       {:ex_machina, "~> 2.7", only: :test},
       {:nimble_csv, "~> 1.2"},
+      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
       {:phoenix, "~> 1.6.5"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.6"},
