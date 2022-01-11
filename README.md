@@ -60,8 +60,8 @@ To run the application using Docker and Docker Compose execute the following com
 
 ```
 docker-compose build
-docker-compose up -d
 docker-compose run web mix ecto.setup
+docker-compose up
 ```
 
 You can then access the application by navigating to `http://localhost:4000/` in your preferred browser.
