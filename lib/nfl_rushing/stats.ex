@@ -97,7 +97,7 @@ defmodule NFLRushing.Stats do
         offset(query, [p], ^offset)
 
       {:player_name, player_name}, query ->
-        where(query, [p], ilike(p.name, ^"#{player_name}%"))
+        where(query, [p], ilike(p.name, ^"%#{player_name}%"))
     end)
   end
 

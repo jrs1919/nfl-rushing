@@ -88,11 +88,20 @@ defmodule NFLRushing.StatsTest do
       insert(:rushing_stats, player: p1)
       insert(:rushing_stats, player: p2)
       insert(:rushing_stats, player: p3)
-      results = Stats.list_players_with_stats(%{filter: [player_name: "Joe"]})
+
+      # Search by first name
+      results = Stats.list_players_with_stats(%{filter: [player_name: "joe"]})
       names = Enum.map(results, & &1.name)
 
       assert length(results) == 2
       assert p1.name in names
+      assert p2.name in names
+
+      # Search by last name
+      results = Stats.list_players_with_stats(%{filter: [player_name: "namath"]})
+      names = Enum.map(results, & &1.name)
+
+      assert length(results) == 1
       assert p2.name in names
     end
 
